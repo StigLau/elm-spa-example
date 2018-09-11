@@ -18,6 +18,7 @@ type Route
     = Home
     | Root
     | Login
+    | KompositionList
     | Logout
     | Register
     | Settings
@@ -32,6 +33,7 @@ parser =
     oneOf
         [ Parser.map Home Parser.top
         , Parser.map Login (s "login")
+        , Parser.map KompositionList (s "kompositionlist")
         , Parser.map Logout (s "logout")
         , Parser.map Settings (s "settings")
         , Parser.map Profile (s "profile" </> Username.urlParser)
@@ -82,6 +84,9 @@ routeToString page =
 
                 Login ->
                     [ "login" ]
+
+                KompositionList ->
+                    [ "kompositionlist" ]
 
                 Logout ->
                     [ "logout" ]

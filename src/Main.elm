@@ -13,6 +13,7 @@ import Page.Article.Editor as Editor
 import Page.Blank as Blank
 import Page.Home as Home
 import Page.Login as Login
+import Page.KompositionList as KompositionList
 import Page.NotFound as NotFound
 import Page.Profile as Profile
 import Page.Register as Register
@@ -39,6 +40,7 @@ type Model
     | Home Home.Model
     | Settings Settings.Model
     | Login Login.Model
+    | KompositionList KompositionList.Model
     | Register Register.Model
     | Profile Username Profile.Model
     | Article Article.Model
@@ -87,6 +89,9 @@ view model =
         Login login ->
             viewPage Page.Other GotLoginMsg (Login.view login)
 
+        KompositionList kompositionlist ->
+            viewPage Page.Other GotKompositionListMsg (KompositionList.view kompositionlist)
+
         Register register ->
             viewPage Page.Other GotRegisterMsg (Register.view register)
 
@@ -115,6 +120,7 @@ type Msg
     | GotHomeMsg Home.Msg
     | GotSettingsMsg Settings.Msg
     | GotLoginMsg Login.Msg
+    | GotKompositionListMsg KompositionList.Msg
     | GotRegisterMsg Register.Msg
     | GotProfileMsg Profile.Msg
     | GotArticleMsg Article.Msg
@@ -139,6 +145,9 @@ toSession page =
 
         Login login ->
             Login.toSession login
+
+        KompositionList kompositionlist ->
+            KompositionList.toSession kompositionlist
 
         Register register ->
             Register.toSession register
@@ -188,6 +197,10 @@ changeRouteTo maybeRoute model =
         Just Route.Login ->
             Login.init session
                 |> updateWith Login GotLoginMsg model
+
+        Just Route.KompositionList ->
+            KompositionList.init session
+                |> updateWith KompositionList GotKompositionListMsg model
 
         Just Route.Register ->
             Register.init session
@@ -247,6 +260,10 @@ update msg model =
             Login.update subMsg login
                 |> updateWith Login GotLoginMsg model
 
+        ( GotKompositionListMsg subMsg, KompositionList kompositionlist ) ->
+            KompositionList.update subMsg kompositionlist
+                |> updateWith KompositionList GotKompositionListMsg model
+
         ( GotRegisterMsg subMsg, Register register ) ->
             Register.update subMsg register
                 |> updateWith Register GotRegisterMsg model
@@ -305,6 +322,9 @@ subscriptions model =
 
         Login login ->
             Sub.map GotLoginMsg (Login.subscriptions login)
+
+        KompositionList kompositionlist ->
+            Sub.map GotKompositionListMsg (KompositionList.subscriptions kompositionlist)
 
         Register register ->
             Sub.map GotRegisterMsg (Register.subscriptions register)

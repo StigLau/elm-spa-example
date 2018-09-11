@@ -7,6 +7,7 @@ import Api exposing (Cred)
 import Api.Endpoint as Endpoint
 import Article exposing (Article, Preview)
 import Article.Feed as Feed
+import Article.KompositionListFeed as KompositionListFeed
 import Article.Tag as Tag exposing (Tag)
 import Browser.Dom as Dom
 import Html exposing (..)
@@ -77,6 +78,7 @@ init session =
     , Cmd.batch
         [ fetchFeed session feedTab 1
             |> Task.attempt CompletedFeedLoad
+        , fetchKompositions session |> Task.attempt CompletedKompositionsLoad
         , Tag.list
             |> Http.send CompletedTagsLoad
         , Task.perform GotTimeZone Time.here
@@ -234,6 +236,7 @@ type Msg
     | ClickedFeedPage Int
     | CompletedFeedLoad (Result Http.Error Feed.Model)
     | CompletedTagsLoad (Result Http.Error (List Tag))
+    | CompletedKompositionsLoad (Result Http.Error (KompositionListFeed.Model))
     | GotTimeZone Time.Zone
     | GotFeedMsg Feed.Msg
     | GotSession Session
@@ -279,6 +282,12 @@ update msg model =
             ( { model | tags = Failed }
             , Log.error
             )
+
+        CompletedKompositionsLoad _ ->
+            let
+                _ = Debug.log("CompletedKompositionsLoad")
+            in
+                ( model , Cmd.none )
 
         GotFeedMsg subMsg ->
             case model.feed of
@@ -331,6 +340,24 @@ update msg model =
 
 
 -- HTTP
+
+
+fetchKompositions : Session -> Task Http.Error (KompositionListFeed.Model)
+fetchKompositions session =
+    let
+        maybeCred =
+            Session.cred session
+
+        decoder =
+            KompositionListFeed.kompdecoder maybeCred articlesPerPage
+
+        --params = PaginatedList.params { resultsPerPage = articlesPerPage }
+
+        request =
+                Api.get (Endpoint.kompositionlist "some params") maybeCred decoder
+    in
+    Http.toTask request
+        |> Task.map (KompositionListFeed.init session)
 
 
 fetchFeed : Session -> FeedTab -> Int -> Task Http.Error Feed.Model

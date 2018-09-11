@@ -1,4 +1,4 @@
-module Api.Endpoint exposing (Endpoint, article, articles, comment, comments, favorite, feed, follow, login, profiles, request, tags, user, users)
+module Api.Endpoint exposing (Endpoint, article, articles, comment, comments, favorite, feed, follow, login, profiles, request, tags, user, users, kompositionlist)
 
 import Article.Slug as Slug exposing (Slug)
 import CommentId exposing (CommentId)
@@ -120,6 +120,10 @@ profiles uname =
 feed : List QueryParameter -> Endpoint
 feed params =
     url [ "articles", "feed" ] params
+
+kompositionlist : String -> Endpoint
+kompositionlist params =
+    url [ "articles", "feed" ] []
 
 
 tags : Endpoint
